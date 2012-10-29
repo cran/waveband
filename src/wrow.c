@@ -1,3 +1,4 @@
+#include <R.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -62,20 +63,20 @@ else
     verbose = 0;
 
 if (verbose)
-    printf("wavereconsow\n");
+   Rprintf("wavereconsow\n");
 
 switch(*bc) {
 
     case PERIODIC:  /* Periodic boundary conditions */
-        if (verbose) printf("Periodic boundary method\n");
+        if (verbose)Rprintf("Periodic boundary method\n");
         break;
 
     case SYMMETRIC: /* Symmetric boundary conditions */
-        if (verbose) printf("Symmetric boundary method\n");
+        if (verbose)Rprintf("Symmetric boundary method\n");
         break;
 
     default:    /* The bc must be one of the above */
-        printf("Unknown boundary correction method\n");
+       Rprintf("Unknown boundary correction method\n");
         *error = 1;
         return;
     }
@@ -83,20 +84,20 @@ switch(*bc) {
 switch(*type)   {
 
     case WAVELET:   /* Standard wavelets */
-        if (verbose) printf("Standard wavelet decomposition\n");
+        if (verbose)Rprintf("Standard wavelet decomposition\n");
         break;
 
     case STATION:   /* Stationary wavelets */
-        if (verbose) printf("Stationary wavelet decomposition\n");
+        if (verbose)Rprintf("Stationary wavelet decomposition\n");
         break;
 
     default:    /* The type must be of one the above */
-        if (verbose) printf("Unknown decomposition type\n");
+        if (verbose)Rprintf("Unknown decomposition type\n");
         *error = 2;
         return;
     }
 
-if (verbose) printf("Building level: ");
+if (verbose)Rprintf("Building level: ");
 
 *error = 0l;
 
@@ -104,7 +105,7 @@ for(next_level = 1; next_level <= *levels; ++next_level)    {
 
     
     if (verbose)
-        printf("%d ", next_level);
+       Rprintf("%d ", next_level);
 
     at_level = next_level - 1; 
 
@@ -124,7 +125,7 @@ for(next_level = 1; next_level <= *levels; ++next_level)    {
         (int)(*bc) );
     }
 if (verbose)
-    printf("\n");
+   Rprintf("\n");
 
 return;
 }
@@ -234,10 +235,10 @@ else if (n<0)   {
         */
         n = n%lengthC + lengthC*((n%lengthC)!=0);
         if (n < 0)      {
-            fprintf(stderr, "reflect: access error (%d,%d)\n",
+            REprintf("reflect: access error (%d,%d)\n",
                 n,lengthC);
-            fprintf(stderr, "reflect: left info from right\n");
-            exit(2);
+            REprintf("reflect: left info from right\n");
+            error("Error occured. Stopping.\n");
             }
         else
             return(n);
@@ -246,36 +247,36 @@ else if (n<0)   {
     else if (bc==SYMMETRIC) {
         n = -1-n;
         if (n >= lengthC)       {
-            fprintf(stderr, "reflect: access error (%d,%d)\n",
+            REprintf("reflect: access error (%d,%d)\n",
                 n,lengthC);
-            exit(3);
+            error("Error occured. Stopping.\n");
             }
         else
             return(n);
         }
 
     else    {
-        fprintf(stderr, "reflect: Unknown boundary correction");
-        fprintf(stderr, " value of %d\n", bc);
-        exit(4);
+        REprintf("reflect: Unknown boundary correction");
+        REprintf(" value of %d\n", bc);
+            error("Error occured. Stopping.\n");
         }
 
     }
 else    {
     if (bc==PERIODIC)   {
         /*
-        printf("periodic extension, was %d (%d) now ",n,lengthC);
+       Rprintf("periodic extension, was %d (%d) now ",n,lengthC);
         n = n - lengthC; 
         */
         n %= lengthC;
         /*
-        printf("%d\n", n);
+       Rprintf("%d\n", n);
         */
         if (n >= lengthC)   {
-            fprintf(stderr, "reflect: access error (%d,%d)\n",
+            REprintf("reflect: access error (%d,%d)\n",
                 n,lengthC);
-            fprintf(stderr, "reflect: right info from left\n");
-            exit(5);
+            REprintf("reflect: right info from left\n");
+            error("Error occured. Stopping.\n");
             }
         else
             return(n);
@@ -283,23 +284,22 @@ else    {
     else if (bc==SYMMETRIC) {
         n = 2*lengthC - n - 1;
         if (n<0)        {
-            fprintf(stderr, "reflect: access error (%d,%d)\n",
+            REprintf("reflect: access error (%d,%d)\n",
                 n,lengthC);
-            exit(6);
+            error("Error occured. Stopping.\n");
             }
         else
             return(n);
         }
     else    {
-        fprintf(stderr, "reflect: Unknown boundary correction\n");
-        exit(7);
+        REprintf("reflect: Unknown boundary correction\n");
+            error("Error occured. Stopping.\n");
         }
 
 
     }
 /* Safety */
-fprintf(stderr, "reflect: SHOULD NOT HAVE REACHED THIS POINT\n");
-exit(8);
+REprintf("reflect: SHOULD NOT HAVE REACHED THIS POINT\n");
+error("Error occured. Stopping.\n");
 return(0); /* for lint only */
 }
-

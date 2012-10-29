@@ -69,7 +69,7 @@ function(alphas.wd, pow = 2, verbose = TRUE, type = "approx", plotfn = FALSE)
     #
     filter.number = alphas.wd$filter$filter.number
     family = alphas.wd$filter$family
-    J <- nlevels(alphas.wd)
+    J <- nlevelsWT(alphas.wd)
     #
     # J is log_2(length(data)). Note that this function implicitly 
     # requires J to be at least 5 (data of length 32).
@@ -337,16 +337,16 @@ function(data = 0, alpha = 0.5, beta = 1., filter.number = 8, family =
     #
     ywd <- wd(data$ynoise, filter.number = filter.number, family = 
         family, bc = bc)
-    sigma <- sqrt(dev(accessD(ywd, level = (nlevels(ywd) - 1.))))
+    sigma <- sqrt(dev(accessD(ywd, level = (nlevelsWT(ywd) - 1.))))
     uvt <- threshold(ywd, policy = "universal", type = "soft",
-        dev = dev, by.level = FALSE, levels = (nlevels(ywd) - 1.),
+        dev = dev, by.level = FALSE, levels = (nlevelsWT(ywd) - 1.),
         return.threshold = TRUE)
     universal <- threshold(ywd, policy = "manual", value = uvt,
-        type = "soft", dev = dev, levels = j0:(nlevels(ywd) -
+        type = "soft", dev = dev, levels = j0:(nlevelsWT(ywd) -
         1.))
-    nsignal <- rep(0., nlevels(ywd))
-    sum2 <- rep(0., nlevels(ywd))
-    for(j in 0.:(nlevels(ywd) - 1.)) {
+    nsignal <- rep(0., nlevelsWT(ywd))
+    sum2 <- rep(0., nlevelsWT(ywd))
+    for(j in 0.:(nlevelsWT(ywd) - 1.)) {
         coefthr <- accessD(universal, level = j)
         nsignal[j + 1.] <- sum(abs(coefthr) > 0.)
         if(nsignal[j + 1.] > 0.)
@@ -355,21 +355,21 @@ function(data = 0, alpha = 0.5, beta = 1., filter.number = 8, family =
     }
     C <- seq(1000., 15000., 50.)
     l <- rep(0., length(C))
-    lev <- seq(0., nlevels(ywd) - 1.)
+    lev <- seq(0., nlevelsWT(ywd) - 1.)
     v <- 2.^( - alpha * lev)
     for(i in 1.:length(C)) {
         l[i] <- 0.5 * sum( - nsignal * (logb(sigma^2. + C[
             i] * v) + 2. * logb(pnorm(( - sigma * sqrt(
-            2. * logb(2.^nlevels(ywd))))/sqrt(sigma^2. +
+            2. * logb(2.^nlevelsWT(ywd))))/sqrt(sigma^2. +
             C[i] * v)))) - sum2/2./(sigma^2. + C[i] * v))
     }
     C1 <- C[l == max(l)]
     tau2 <- C1 * v
-    p <- 2. * pnorm(( - sigma * sqrt(2. * logb(2.^nlevels(ywd))))/
+    p <- 2. * pnorm(( - sigma * sqrt(2. * logb(2.^nlevelsWT(ywd))))/
         sqrt(sigma^2. + tau2))
     if(beta == 1.)
-        C2 <- sum(nsignal/p)/nlevels(ywd)
-    else C2 <- (1. - 2.^(1. - beta))/(1. - 2.^((1. - beta) * nlevels(ywd))) * sum(nsignal/p)
+        C2 <- sum(nsignal/p)/nlevelsWT(ywd)
+    else C2 <- (1. - 2.^(1. - beta))/(1. - 2.^((1. - beta) * nlevelsWT(ywd))) * sum(nsignal/p)
     pr <- pmin(1., C2 * 2.^( - beta * lev))
     rat <- tau2/(sigma^2. + tau2)
     #
@@ -390,7 +390,7 @@ function(data = 0, alpha = 0.5, beta = 1., filter.number = 8, family =
     #
     # Now the cumulants of the wavelet coefficients:
     #
-    for(j in 0.:(nlevels(ywd) - 1.)) {
+    for(j in 0.:(nlevelsWT(ywd) - 1.)) {
         coef <- accessD(ywd, level = j)
         w <- ((1. - pr[j + 1.])/pr[j + 1.])/(sqrt((sigma^2 *
             rat[j + 1])/tau2[j + 1.])) * exp(( - rat[j +
@@ -569,7 +569,7 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
         stop("wd is not of class wd")
     if(start.level < 0.)
         stop("start.level must be nonnegative")
-    if(start.level >= nlevels(wd))
+    if(start.level >= nlevelsWT(wd))
         stop("start.level must be less than the number of levels"
             )
     if(is.null(wd$filter$filter.number))
@@ -591,15 +591,15 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
     if(verbose == TRUE)
         cat("...done\nFirst/last database...")
     r.first.last.c <- wd$fl.dbase$first.last.c[(start.level + 1.):
-        (nlevels(wd) + 1.),  ]
+        (nlevelsWT(wd) + 1.),  ]
     r.first.last.d <- matrix(wd$fl.dbase$first.last.d[(start.level +
-        1.):(nlevels(wd)),  ], ncol = 3.)
+        1.):(nlevelsWT(wd)),  ], ncol = 3.)
     ntotal <- r.first.last.c[1., 3.] + r.first.last.c[1., 2.] -
         r.first.last.c[1., 1.] + 1.
     names(ntotal) <- NULL
     C <- wd$C
     #C <- c(rep(0., length = (ntotal - length(C))), C)
-    Nlevels <- nlevels(wd) - start.level
+    Nlevels <- nlevelsWT(wd) - start.level
     error <- 0.
     if(verbose == TRUE)
         cat("...built\n")
@@ -675,15 +675,15 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
     if(!is.complex(wd$D)) {
         l <- list(C = wavelet.reconstruction$C, D = 
             wavelet.reconstruction$D, fl.dbase = fl.dbase,
-            nlevels = nlevels(wd), filter = filter, type = 
+            nlevels = nlevelsWT(wd), filter = filter, type = 
             type, bc = bc, date = date())
     }
     else {
         l <- list(C = complex(real = wavelet.reconstruction$
-            CR, im = wavelet.reconstruction$CI), D = 
-            complex(real = wavelet.reconstruction$DR, im = 
+            CR, imaginary = wavelet.reconstruction$CI), D = 
+            complex(real = wavelet.reconstruction$DR, imaginary = 
             wavelet.reconstruction$DI), fl.dbase = fl.dbase,
-            nlevels = nlevels(wd), filter = filter, type = 
+            nlevels = nlevelsWT(wd), filter = filter, type = 
             type, bc = bc, date = date())
     }
     oldClass(l) <- "wd"
