@@ -8,7 +8,7 @@ Plots the output from \code{\link{wave.band}}.
 \method{plot}{wb}(x, col=FALSE, ...)
 }
 \arguments{
-\item{x}{Output list from the function \code{\link{wave.band}}.}
+\item{x}{Object of class \code{wb} from the function \code{\link{wave.band}}.}
 \item{col}{Specifies whether the figure plotted is in colour or black and white.}
 \item{...}{Any other arguments.}
 }
@@ -18,6 +18,11 @@ The function \code{\link{wave.band}} offers a plotting option. This function wil
 \value{
 A plot is produced on the current graphics device 
 }
+
+\references{Barber, S., Nason, G.P. and Silverman, B.W. (2002)
+	Posterior probability intervals for wavelet thresholding.
+	\emph{Journal of the Royal Statistical Society}, Series B,
+	\bold{64}, 189-206.}
 \seealso{
 \code{\link{wave.band}}
 }

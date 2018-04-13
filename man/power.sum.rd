@@ -26,6 +26,10 @@ Sums of powers of wavelets are used in the computation of posterior credible int
 \value{
 A vector containing the solution (either exact or approximate), or a list containing both solutions, depending on the value of "type". 
 }
+\references{Barber, S., Nason, G.P. and Silverman, B.W. (2002)
+	Posterior probability intervals for wavelet thresholding.
+	\emph{Journal of the Royal Statistical Society}, Series B,
+	\bold{64}, 189-206.}
 \section{SIDE EFFECTS}{
 If \code{plotfn=TRUE}, the solution(s) found are plotted.
 }

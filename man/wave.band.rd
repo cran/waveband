@@ -12,7 +12,8 @@ wave.band(data = 0, alpha = 0.5, beta = 1., filter.number = 8, family =
 \arguments{
 Either data or a value of type other than "data" must be supplied. 
 
-\item{data}{If type="data", then data should be a vector of data. The length of the vector should be a power of two not greater than 1024.}
+\item{data}{If type="data", then data should be a vector of data. The length of the vector should be a power of two not greater than 1024, and not less
+	than 8.}
 \item{type}{Either type="data", in which case a vector of data should be supplied, or type should specify a standard test function and wave.band will generate a test data set via a call to test.data. Permissible values for type are "blocks", "bumps", "doppler", "heavi", or "ppoly"; see the documentation for test.data for more details.}
 \item{alpha, beta}{Hyperparameters which determine the priors placed on the wavelet coefficients. Both alpha and beta take positive values; see Abramovich, Sapatinas, & Silverman (1998) or Chipman & Wolfson (1999) for more details on selecting alpha and beta.}
 \item{filter.number}{A parameter relating to the smoothness of wavelet that you want to use in the decomposition.}
@@ -33,7 +34,8 @@ The cumulants of these posteriors are computed and stored in the \code{wd.object
 Code to implement the algorithms by Hill (1976) and Hill, Hill, & Holder (1976) was obtained from the StatLib archive.
 }
 \value{
-If \code{retvalue=FALSE}, the value returned by \code{wave.band} is \code{NULL}. Otherwise, \code{wave.band} returns a list with the following components: 
+If \code{retvalue=FALSE}, the value returned by \code{wave.band} is \code{NULL}. Otherwise, \code{wave.band} returns a list, an object of class
+	\code{wb}, with the following components: 
 
 \item{data}{The data vector which has been analysed. }
 \item{nts}{A list containing four vectors named one, two, three, and four. Vector one contains the first cumulants of the regression function estimate, vector to the second cumulants and so on.}
@@ -44,11 +46,15 @@ The \code{BayesThresh} estimate of the regression function, using the same param
 
 \item{param}{A record of parameters in the call to \code{wave.band}.}
 }  
+\references{Barber, S., Nason, G.P. and Silverman, B.W. (2002)
+	Posterior probability intervals for wavelet thresholding.
+	\emph{Journal of the Royal Statistical Society}, Series B,
+	\bold{64}, 189-206.}
 \section{SIDE EFFECTS}{
 If \code{plotfn=TRUE}, results are plotted on the current graphics device.
 }
 \seealso{
-\code{BAYES.THR}, \code{\link{plot.wb}}, \code{\link{power.sum}}, \code{\link{test.data}}
+\code{BAYES.THR}, \code{\link{print.wb}}, \code{\link{plot.wb}}, \code{\link{power.sum}}, \code{\link{test.data}}
 }
 \examples{
 #library(wavethresh)

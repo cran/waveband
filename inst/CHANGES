@@ -1,2 +1,8 @@
-
 From 4.5 to 4.6:	Moved all references from nlevels() to nlevelsWT()
+
+4.7:	Introduced the JRSSB paper reference into some of the help files.
+	Added registration of S3Methods and also imports directives to NAMESPACE
+	Also added restriction to only analyse vectors of length >= 8,
+	as wd doesn't deal well with small length vectors by default 
+	Added print.wb and summary.wb methods
+	Added init.c to src directory and registered native routines.

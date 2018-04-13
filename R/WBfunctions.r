@@ -4,6 +4,26 @@ function(mat.row, coeffs)
     return(coeffs[mat.row[1]:mat.row[2]])
 }
 
+"print.wb" <-
+function(x, ...)
+{
+cat("Wave.band credible bands object\n")
+cat("Bands produced for x in data component of length: ", length(x$data), "\n")
+cat("Credible intervals are in the bands component\n")
+cat("Wave.band Bayesian hyperparameter alpha was: ", x$param$alpha, "\n")
+cat("Wave.band Bayesian hyperparameter beta was: ", x$param$beta, "\n")
+cat("Wave.band Wavelet filter number was: ", x$param$filter.number, "\n")
+cat("Wave.band Wavelet family was: ", x$param$family, "\n")
+cat("Type of input (data or test signal):", x$param$type, "\n")
+cat("Rsnr (if applicable): ", x$param$rsnr, "\n")
+}
+
+"summary.wb" <-
+function(object, ...)
+{
+print.wb(object, ...)
+}
+
 "plot.wb" <- 
 function(x, col = FALSE, ...)
 {
@@ -313,6 +333,8 @@ function(data = 0, alpha = 0.5, beta = 1., filter.number = 8, family =
     #
     if(type == "data") {
         n <- length(data)
+	if (n < 8)
+		stop("Length of data should be >= 8")
         ispow <- !is.na(IsPowerOfTwo(n))
         if(ispow && (n < 1025))
             data <- list(x = (1:n)/n, ynoise = data)
@@ -459,6 +481,7 @@ function(data = 0, alpha = 0.5, beta = 1., filter.number = 8, family =
         returnable <- list(data = data$ynoise, cumulants = 
             cumulants, Kr.wd = Kr.wd, bands = bands, param
              = param)
+    class(returnable) <- "wb"
     #
     # And, if asked, draw some pictures:
     #
@@ -512,7 +535,7 @@ function(k, verbose = FALSE)
     #
     # Next use jnsn() to find the Johnson curve with these parameters.
     #
-    temp <- .Fortran("jnsn",
+    temp <- .Fortran(C_jnsn,
         XBAR = as.double(k[1]),
         SD = as.double(sd),
         RB1 = as.double(rbeta1),
@@ -522,7 +545,7 @@ function(k, verbose = FALSE)
         DELTA = as.double(0),
         XLAM = as.double(0),
         XI = as.double(0),
-        IFAULT = as.integer(0), PACKAGE = "waveband")
+        IFAULT = as.integer(0))
     lims[1] <- temp$IFAULT
     #
     # Now use ajv() to get the required points of this distribution, 
@@ -537,7 +560,7 @@ function(k, verbose = FALSE)
 function(zval, parameters)
 {
     zvalue <- zval[1]
-    temp <- .Fortran("ajv",
+    temp <- .Fortran(C_ajv,
         SNV = as.double(zvalue),
         JVAL = as.double(0),
         ITYPE = as.integer(parameters$ITYPE),
@@ -545,7 +568,7 @@ function(zval, parameters)
         DELTA = as.double(parameters$DELTA),
         XLAM = as.double(parameters$XLAM),
         XI = as.double(parameters$XI),
-        IFAULT = as.integer(0), PACKAGE = "waveband")
+        IFAULT = as.integer(0))
     return(temp$JVAL)
 }
 
@@ -618,7 +641,7 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
     if(is.null(nbc))
         stop("Unknown boundary handling")
     if(!is.complex(wd$D)) {
-        wavelet.reconstruction <- .C("wavereconsow",
+        wavelet.reconstruction <- .C(C_wavereconsow,
             C = as.double(C),
             D = as.double(wd$D),
             H = as.double(filter$H),
@@ -632,7 +655,7 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
             offsetD = as.integer(r.first.last.d[, 3.]),
                 type = as.integer(ntype),
             nbc = as.integer(nbc),
-            error = as.integer(error), PACKAGE="waveband")
+            error = as.integer(error))
     }
     else {
         wavelet.reconstruction <- .C("comwr",
@@ -661,7 +684,7 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
 
                 ntype = as.integer(ntype),
             nbc = as.integer(nbc),
-            error = as.integer(error), PACKAGE="waveband")
+            error = as.integer(error), PACKAGE="wavethresh")
     }
     if(verbose == TRUE)
         cat("done\n")

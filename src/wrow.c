@@ -2,10 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Error condition      */
-#define ERROR           (-1)
-#define OK              (0)
- 
 /* For boundary condition handling */
 #define PERIODIC        1
 #define SYMMETRIC       2
