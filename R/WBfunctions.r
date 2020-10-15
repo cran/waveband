@@ -684,7 +684,7 @@ function(wd, start.level = 0., verbose = FALSE, bc = wd$bc, return.object
 
                 ntype = as.integer(ntype),
             nbc = as.integer(nbc),
-            error = as.integer(error), PACKAGE="wavethresh")
+            error = as.integer(error), PACKAGE="waveband")
     }
     if(verbose == TRUE)
         cat("done\n")

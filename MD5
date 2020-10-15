@@ -1,9 +1,9 @@
-2d999062e42b8e3f1a535c3695a16a86 *DESCRIPTION
+4f3f431f9294253f7e0defa87019a8a5 *DESCRIPTION
 65ffde06b1d5a11c74d2108dc8a4ee48 *NAMESPACE
-e061f28e0224e8ffed63d753f49300cf *R/WBfunctions.r
+4db1370b9a737aa8ac80cc4fe664b454 *R/WBfunctions.r
 ed5285e98ac03ddb5bb45773a6f04650 *R/test.data.R
 cbfd2091c207ec9384913bd2b71d1608 *data/nmr.rda
-dd610d29f1eb4bb410dd36f4f8b31e7b *inst/CHANGES
+e153abc487240230aebe0ecae7047e10 *inst/CHANGES
 fa5ff6b8d88bb6695000192e7e74bd12 *man/nmr.rd
 4f2d76b99f8c6bece051cdaf95d6148a *man/plot.wb.rd
 6c76190af95393b725bcb090fcb986db *man/power.sum.rd
@@ -13,5 +13,6 @@ c0ba4f9feab92edcdcbf8135793e9367 *man/print.wb.Rd
 4b3467ced1ffe9494f17bbfe0bf4ca2c *man/wave.band.rd
 84d264f91fd75b3928f6f0fb5e8c9201 *src/as100.f
 37135ab57c9fc5a11cba52f5624489ea *src/as99.f
+949b4dcc9369bcc507bad92b7a14b448 *src/functions.c
 3ed41f6737d9604903bda01453ded7f5 *src/init.c
 c9e98d566b1a729a7666ecebfec38b7e *src/wrow.c

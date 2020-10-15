@@ -6,3 +6,7 @@ From 4.5 to 4.6:	Moved all references from nlevels() to nlevelsWT()
 	as wd doesn't deal well with small length vectors by default 
 	Added print.wb and summary.wb methods
 	Added init.c to src directory and registered native routines.
+
+4.7.1   Move some C source code (comwr, comcbr and commul) from wavethresh
+	to here. This is because R packages no longer permit borrowing
+	code from other packages.
