@@ -31,27 +31,36 @@
 
 /* MAN: changed type of variables from long to int to remove segmentation fault
  */
-void wavereconsow(C, D, H, LengthH, levels,
-    firstC, lastC, offsetC, firstD, lastD, offsetD, type, bc, error)
-double *C;              /* Input data, and the subsequent smoothed data */
-double *D;              /* The wavelet coefficients                     */
-double *H;              /* The smoothing filter H                       */
-int *LengthH;          /* Length of smoothing filter                   */
-int *levels;           /* The number of levels in this decomposition   */
-int *firstC;           /* The first possible C coef at a given level   */
-int *lastC;            /* The last possible C coef at a given level    */
-int *offsetC;          /* Offset from C[0] for certain level's coeffs  */
-int *firstD;           /* The first possible D coef at a given level   */
-int *lastD;            /* The last possible D coef at a given level    */
-int *offsetD;          /* Offset from D[0] for certain level's coeffs  */
-int *type;     /* The type of wavelet decomposition        */
-int *bc;       /* Which boundary handling are we doing     */
-int *error;            /* Error code                                   */
+void wavereconsow(double *C, double *D, double *H, int *LengthH, int *levels,
+	int *firstC, int *lastC, int *offsetC,
+	int *firstD, int *lastD, int *offsetD,
+	int *type, int *bc, int *error)
+/*---------------------
+ * Argument description
+ *---------------------
+double *C::             Input data, and the subsequent smoothed data 
+double *D::             The wavelet coefficients                     
+double *H::             The smoothing filter H                       
+int *LengthH::          Length of smoothing filter                   
+int *levels::           The number of levels in this decomposition   
+int *firstC::           The first possible C coef at a given level   
+int *lastC::            The last possible C coef at a given level    
+int *offsetC::          Offset from C[0] for certain level's coeffs  
+int *firstD::           The first possible D coef at a given level   
+int *lastD::            The last possible D coef at a given level    
+int *offsetD::          Offset from D[0] for certain level's coeffs  
+int *type::      	The type of wavelet decomposition        
+int *bc::        	Which boundary handling are we doing     
+int *error::            Error code                                   
+ *---------------------*/
 {
 register int next_level, at_level;
 register int verbose;   /* Printing messages, passed in error       */
 
-void conbarow();
+void conbarow(double *c_in, int LengthCin, int firstCin, double *d_in,
+	int LengthDin, int firstDin, double *H, int LengthH,
+	double *c_out, int LengthCout, int firstCout, int lastCout,
+	int type, int bc);
 
 if (*error == 1l)
     verbose = 1;
@@ -131,30 +140,16 @@ return;
 
 #define CEIL(i) ( ((i)>0) ? ( ((i)+1)/2):((i)/2) )
 
-void conbarow(c_in, LengthCin, firstCin,
-       d_in, LengthDin, firstDin,
-       H, LengthH,
-       c_out, LengthCout, firstCout, lastCout, type, bc)
-double *c_in;
-int LengthCin;
-int firstCin;
-double *d_in;
-int LengthDin;
-int firstDin;
-double *H;
-int LengthH;
-double *c_out;
-int LengthCout;
-int firstCout;      /* This determines summation over n     */
-int lastCout;       /* and this does too                */
-int type;       /* The type of wavelet reconstruction       */
-int bc;
+void conbarow(double *c_in, int LengthCin, int firstCin, double *d_in,
+	int LengthDin, int firstDin, double *H, int LengthH,
+	double *c_out, int LengthCout, int firstCout, int lastCout,
+	int type, int bc)
 {
 register int n,k;
 register int cfactor;
 double sumC, sumD;
 
-int reflect();
+int reflect(int n, int lengthC, int bc);
 
 switch(type)    {
 
@@ -215,11 +210,9 @@ for(n=firstCout; n<=lastCout; ++n)  {
     }
 
 }
+
 /* Works out reflection, as REFLECT, but reports access errors */
-int reflect(n, lengthC, bc)
-int n;
-int lengthC;
-int bc;
+int reflect(int n, int lengthC, int bc)
 {
 
 if ((n >= 0) && (n < lengthC))

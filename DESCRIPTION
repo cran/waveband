@@ -1,7 +1,7 @@
 Package: waveband
 Title: Computes Credible Intervals for Bayesian Wavelet Shrinkage
-Version: 4.7.1
-Date: 2020-10-15
+Version: 4.7.2
+Date: 2022-11-11
 Authors@R: c(person("Stuart", "Barber", role=c("aut"),
 	email="stuart@maths.leeds.ac.uk"),
         person("Guy", "Nason", role=c("cre", "ctb"),
@@ -23,9 +23,9 @@ Description: Computes Bayesian wavelet shrinkage credible intervals for
 	<doi:10.1111/1467-9868.00332>.
 License: GPL (>= 2)
 NeedsCompilation: yes
-Packaged: 2020-10-15 14:12:24 UTC; guynason
+Packaged: 2022-11-11 18:51:43 UTC; guynason
 Author: Stuart Barber [aut],
   Guy Nason [cre, ctb]
 Maintainer: Guy Nason <g.nason@imperial.ac.uk>
 Repository: CRAN
-Date/Publication: 2020-10-15 23:10:02 UTC
+Date/Publication: 2022-11-12 01:10:02 UTC

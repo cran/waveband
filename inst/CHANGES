@@ -10,3 +10,6 @@ From 4.5 to 4.6:	Moved all references from nlevels() to nlevelsWT()
 4.7.1   Move some C source code (comwr, comcbr and commul) from wavethresh
 	to here. This is because R packages no longer permit borrowing
 	code from other packages.
+
+4.7.2	Added C prototypes for all functions in response to request from
+	R team
