@@ -14,8 +14,8 @@ extern void comwr(void *CR, void *CI, void *LengthC, void *DR, void *DI, void *L
 extern void wavereconsow(void *C, void *D, void *H, void *LengthH, void *levels, void *firstC, void *lastC, void *offsetC, void *firstD, void *lastD, void *offsetD, void *type, void *bc, void *error);
 
 /* .Fortran calls */
-extern void F77_NAME(ajv)(void *SNV, void *JVAL, void *ITYPE, void *GAMMA, void *DELTA, void *XLAM, void *XI, void *IFAULT);
-extern void F77_NAME(jnsn)(void *XBAR, void *SD, void *RB1, void *BB2, void *ITYPE, void *GAMMA, void *DELTA, void *XLAM, void *XI, void *IFAULT);
+extern void F77_NAME(ajv)(double *SNV, double *JVAL, int *ITYPE, double *GAMMA, double *DELTA, double *XLAM, double *XI, int *IFAULT);
+extern void F77_NAME(jnsn)(double *XBAR, double *SD, double *RB1, double *BB2, int *ITYPE, double *GAMMA, double *DELTA, double *XLAM, double *XI, int *IFAULT);
 
 static const R_CMethodDef CEntries[] = {
     {"wavereconsow", (DL_FUNC) &wavereconsow, 14},

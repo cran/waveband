@@ -382,7 +382,8 @@ C
 C
       FAULT = .FALSE.
       DO 10 I = 1, 6
-   10 C(I) = ZERO
+        C(I) = ZERO
+   10 CONTINUE
       W = G / D
 C
 C        TRIAL VALUE OF H
@@ -400,7 +401,8 @@ C
    20 K = K + 1
       IF (K .GT. LIMIT) GOTO 140
       DO 30 I = 1, 6
-   30 C(I) = A(I)
+        C(I) = A(I)
+   30 CONTINUE
 C
 C        NO CONVERGENCE YET - TRY SMALLER H
 C
@@ -411,7 +413,8 @@ C
       X = TWO * Y
       A(1) = ONE / E
       DO 50 I = 2, 6
-   50 A(I) = A(I - 1) / E
+      A(I) = A(I - 1) / E
+   50 CONTINUE
       V = Y
       F = R * H
       M = 0
@@ -422,7 +425,8 @@ C
    60 M = M + 1
       IF (M .GT. LIMIT) GOTO 140
       DO 70 I = 1, 6
-   70 B(I) = A(I)
+        B(I) = A(I)
+   70 CONTINUE
       U = U - F
       Z = ONE
       IF (U .GT. -DEXPB) Z = ZDEXP(U) + Z
@@ -455,7 +459,8 @@ C        END OF INNER LOOP
 C
       V = RRTPI * H
       DO 120 I = 1, 6
-  120 A(I) = V * A(I)
+        A(I) = V * A(I)
+  120 CONTINUE
       DO 130 I = 1, 6
       IF (A(I) .EQ. ZERO) GOTO 140
       IF (ZDABS((A(I) - C(I)) / A(I)) .GT. ZZ) GOTO 20
