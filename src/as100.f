@@ -1,3 +1,6 @@
+C
+C	Modified by GPN on 4th Nov 2024 to remove Computed GOTO
+C
 CSTART OF AS 100
       SUBROUTINE AJV(SNV, JVAL, ITYPE, GAMMA, DELTA, XLAM, XI, IFAULT)
 C
@@ -7,100 +10,125 @@ C        CONVERTS A STANDARD NORMAL VARIATE (SNV) TO A
 C        JOHNSON VARIATE (JVAL)
 C
       DOUBLE PRECISION SNV, JVAL, GAMMA, DELTA, XLAM, XI, V, W, ZERO, 
-     $  HALF, ONE, ZDABS, ZDEXP, ZDSIGN
+     $  HALF, ONE
 C
       DATA ZERO, HALF, ONE /0.0, 0.5, 1.0/
 C
-      ZDABS(W) = DABS(W)
-      ZDEXP(W) = DEXP(W)
-      ZDSIGN(W, V) = DSIGN(W, V)
+C	Replaced following statement functions ZDABS, ZDEXP, ZDSIGN
+C     ZDABS(W) = DABS(W)
+C     ZDEXP(W) = DEXP(W)
+C     ZDSIGN(W, V) = DSIGN(W, V)
 C
       JVAL = ZERO
       IFAULT = 1
       IF (ITYPE .LT. 1 .OR. ITYPE .GT. 4) RETURN
       IFAULT = 0
-      GOTO (10, 20, 30, 40), ITYPE
+
 C
-C        SL DISTRIBUTION
-C
-   10 JVAL = XLAM * ZDEXP((XLAM * SNV - GAMMA) / DELTA) + XI
-      RETURN
-C
-C        SU DISTRIBUTION
-C
-   20 W = ZDEXP((SNV - GAMMA) / DELTA)
-      W = HALF * (W - ONE / W)
-      JVAL = XLAM * W + XI
-      RETURN
-C
-C        SB DISTRIBUTION
-C
-   30 W = (SNV - GAMMA) / DELTA
-      V = ZDEXP(-ZDABS(W))
-      V = (ONE - V) / (ONE + V)
-      JVAL = HALF * XLAM * (ZDSIGN(V, W) + ONE) + XI
-      RETURN
-C
-C        NORMAL DISTRIBUTION
-C
-   40 JVAL = (SNV - GAMMA) / DELTA
-      RETURN
+C	Replaced Computed GOTO With IF - THEN - ELSEIF - END IF block
+
+      IF (ITYPE .EQ. 1) THEN
+
+C		SL DISTRIBUTION (was GOTO 10)
+         JVAL = XLAM * DEXP((XLAM * SNV - GAMMA) / DELTA) + XI
+         RETURN
+
+      ELSE IF (ITYPE .EQ. 2) THEN
+
+C               SU DISTRIBUTION (was GOTO 20)
+         W = DEXP((SNV - GAMMA) / DELTA)
+         W = HALF * (W - ONE / W)
+         JVAL = XLAM * W + XI
+         RETURN
+
+      ELSE IF (ITYPE .EQ. 3) THEN
+
+C              SB DISTRIBUTION (was GOTO 30)
+         W = (SNV - GAMMA) / DELTA
+         V = DEXP(-DABS(W))
+         V = (ONE - V) / (ONE + V)
+         JVAL = HALF * XLAM * (DSIGN(V, W) + ONE) + XI
+         RETURN
+
+      ELSE
+
+C        NORMAL DISTRIBUTION (was GOTO 40)
+
+         JVAL = (SNV - GAMMA) / DELTA
+         RETURN
+      END IF
       END
 C
-      SUBROUTINE SNV(AJV, NVAL, ITYPE, GAMMA, DELTA, XLAM, XI, IFAULT)
+C     waveband does not require subroutine SNV so it has been commented out
+C
+C     SUBROUTINE SNV(AJV, NVAL, ITYPE, GAMMA, DELTA, XLAM, XI, IFAULT)
 C
 C        ALGORITHM AS 100.2  APPL. STATIST. (1976) VOL.25, P.190
 C
 C        CONVERTS A JOHNSON VARIATE (AJV) TO A
 C        STANDARD NORMAL VARIATE (NVAL)
 C
-      DOUBLE PRECISION AJV, GAMMA, DELTA, XLAM, XI, V, W, C, ZERO, 
-     $  HALF, ONE, ZDLOG, ZDSQRT
+C     DOUBLE PRECISION AJV, GAMMA, DELTA, XLAM, XI, V, W, C, ZERO, 
+C    $  HALF, ONE
 C
-      DATA ZERO, HALF, ONE, C /0.0, 0.5, 1.0, -63.0/
+C     DATA ZERO, HALF, ONE, C /0.0, 0.5, 1.0, -63.0/
 C
-      ZDLOG(W) = DLOG(W)
-      ZDSQRT(W) = DSQRT(W)
+C	Don't need following statement functions ZDLOG, ZDSQRT
+C     ZDLOG(W) = DLOG(W)
+C     ZDSQRT(W) = DSQRT(W)
 C
-      NVAL = ZERO
-      IFAULT = 1
-      IF (ITYPE .LT. 1 .OR. ITYPE .GT. 4) RETURN
-      IFAULT = 0
-      GOTO (10, 20, 30, 40), ITYPE
+C     NVAL = ZERO
+C     IFAULT = 1
+C     IF (ITYPE .LT. 1 .OR. ITYPE .GT. 4) RETURN
+C     IFAULT = 0
+C     Removing Computed GOTO (10, 20, 30, 40), ITYPE
 C
-C        SL DISTRIBUTION
+C     IF (ITYPE .EQ. 1) THEN
 C
-   10 W = XLAM * (AJV - XI)
-      IF (W .LE. ZERO) GOTO 15
-      NVAL = XLAM * (ZDLOG(W) * DELTA + GAMMA)
-      RETURN
-   15 IFAULT = 2
-      RETURN
+C        SL DISTRIBUTION (was GOTO 10)
 C
-C        SU DISTRIBUTION
+C        W = XLAM * (AJV - XI)
 C
-   20 W = (AJV - XI) / XLAM
-      IF (W .GT. C) GOTO 23
-      W = -HALF / W
-      GOTO 27
-   23 W = ZDSQRT(W * W + ONE) + W
-   27 NVAL = ZDLOG(W) * DELTA + GAMMA
-      RETURN
+C        IF (W .LE. ZERO) THEN
+C           IFAULT = 2
+C        ELSE
+C           NVAL = XLAM * (DLOG(W) * DELTA + GAMMA)
+C        END IF
+C        RETURN
 C
-C        SB DISTRIBUTION
+C     ELSE IF (ITYPE .EQ. 2) THEN
 C
-   30 W = AJV - XI
-      V = XLAM - W
-      IF (W .LE. ZERO .OR. V .LE. ZERO) GOTO 35
-      NVAL = ZDLOG(W / V) * DELTA + GAMMA
-      RETURN
-   35 IFAULT = 2
-      RETURN
+C        SU DISTRIBUTION (was GOTO 20)
 C
-C        NORMAL DISTRIBUTION
+C        W = (AJV - XI) / XLAM
+C        IF (W .GT. C) THEN
+C           W = DSQRT(W * W + ONE) + W
+C        ELSE
+C           W = -HALF / W
+C        END IF
+C        NVAL = DLOG(W) * DELTA + GAMMA
+C        RETURN
 C
-   40 NVAL = DELTA * AJV + GAMMA
-      RETURN
-      END
+C     ELSE IF (ITYPE .EQ. 3) THEN
+C 
+C        SB DISTRIBUTION (was GOTO 30)
+C
+C        W = AJV - XI
+C        V = XLAM - W
+C        IF (W .LE. ZERO .OR. V .LE. ZERO) THEN
+C           IFAULT = 2
+C        ELSE
+C           NVAL = DLOG(W / V) * DELTA + GAMMA
+C        END IF
+C        RETURN
+C
+C      ELSE
+C 
+C        NORMAL DISTRIBUTION (was GOTO 40)
+C
+C        NVAL = DELTA * AJV + GAMMA
+C        RETURN
+C
+C     END IF
+C     END
 CEND OF AS 100
-

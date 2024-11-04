@@ -15,3 +15,7 @@ From 4.5 to 4.6:	Moved all references from nlevels() to nlevelsWT()
 	R team
 
 4.7.3	Removed obsolete FORTRAN after email from Brian
+
+4.7.4	Removed or replaced obsolescent code in as99.f and as100.f Replaced Computed GOTOs in as100.f. Commented out SNV subroutine as it was
+	not used by waveband. Remaining compiler warning is complaining about the possibility of an uninitialized variable S. I've checked code and
+	by dependence on a logical variable L, S can not be used uninitialized. So, this warning can safely be ignored

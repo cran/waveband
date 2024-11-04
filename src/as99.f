@@ -9,18 +9,20 @@ C        WITH GIVEN FIRST FOUR MOMENTS
 C
       DOUBLE PRECISION XBAR, SD, RB1, BB2, GAMMA, DELTA, XLAM, XI, TOL,
      $  B1, B2, Y, X, U, W, ZERO, ONE, TWO, THREE, FOUR, HALF,
-     $  QUART, ZDABS, ZDEXP, ZLOG, ZDSIGN, ZDSQRT
+     $  QUART
       LOGICAL FAULT
 C
       DATA TOL /0.01/
       DATA ZERO, QUART, HALF, ONE, TWO, THREE, FOUR
      $     /0.0,  0.25,  0.5, 1.0, 2.0,   3.0,  4.0/
 C
-      ZDABS(X) = DABS(X)
-      ZDEXP(X) = DEXP(X)
-      ZLOG(X) = DLOG(X)
-      ZDSIGN(X, Y) = DSIGN(X, Y)
-      ZDSQRT(X) = DSQRT(X)
+
+C     Don't need statement fns ZDABS, ZDEXP, ZLOG, ZDSIGN, ZDSQRT
+C     ZDABS(X) = DABS(X)
+C     ZDEXP(X) = DEXP(X)
+C     ZLOG(X) = DLOG(X)
+C     ZDSIGN(X, Y) = DSIGN(X, Y)
+C     ZDSQRT(X) = DSQRT(X)
 C
       IFAULT = 1
       IF (SD .LT. ZERO) RETURN
@@ -40,7 +42,7 @@ C
 C        TEST WHETHER LOGNORMAL (OR NORMAL) REQUESTED
 C
       IF (B2 .GE. ZERO) GOTO 30
-   20 IF (ZDABS(RB1) .LE. TOL) GOTO 70
+   20 IF (DABS(RB1) .LE. TOL) GOTO 70
       GOTO 80
 C
 C        TEST FOR POSITION RELATIVE TO BOUNDARY LINE
@@ -51,16 +53,16 @@ C
 C        ST DISTRIBUTION
 C
    40 ITYPE = 5
-      Y = HALF + HALF * ZDSQRT(ONE - FOUR / (B1 + FOUR))
+      Y = HALF + HALF * DSQRT(ONE - FOUR / (B1 + FOUR))
       IF (RB1 .GT. ZERO) Y = ONE - Y
-      X = SD / ZDSQRT(Y * (ONE - Y))
+      X = SD / DSQRT(Y * (ONE - Y))
       XI = XBAR - Y * X
       XLAM = XI + X
       DELTA = Y
       RETURN
    50 IFAULT = 2
       RETURN
-   60 IF (ZDABS(RB1) .GT. TOL .OR. ZDABS(B2 - THREE) .GT. TOL) GOTO 80
+   60 IF (DABS(RB1) .GT. TOL .OR. DABS(B2 - THREE) .GT. TOL) GOTO 80
 C
 C        NORMAL DISTRIBUTION
 C
@@ -72,24 +74,24 @@ C
 C        TEST FOR POSITION RELATIVE TO LOGNORMAL LINE
 C
    80 X = HALF * B1 + ONE
-      Y = ZDABS(RB1) * ZDSQRT(QUART * B1 + ONE)
+      Y = DABS(RB1) * DSQRT(QUART * B1 + ONE)
       U = (X + Y) ** (ONE / THREE)
       W = U + ONE / U - ONE
       U = W * W * (THREE + W * (TWO + W)) - THREE
       IF (B2 .LT. ZERO .OR. FAULT) B2 = U
       X = U - B2
-      IF (ZDABS(X) .GT. TOL) GOTO 90
+      IF (DABS(X) .GT. TOL) GOTO 90
 C
 C        LOGNORMAL (SL) DISTRIBUTION
 C
       ITYPE = 1
-      XLAM = ZDSIGN(ONE, RB1)
+      XLAM = DSIGN(ONE, RB1)
       U = XLAM * XBAR
-      X = ONE / ZDSQRT(ZLOG(W))
+      X = ONE / DSQRT(DLOG(W))
       DELTA = X
-      Y = HALF * X * ZLOG(W * (W - ONE) / (SD * SD))
+      Y = HALF * X * DLOG(W * (W - ONE) / (SD * SD))
       GAMMA = Y
-      XI = XLAM * (U - ZDEXP((HALF / X - Y) / X))
+      XI = XLAM * (U - DEXP((HALF / X - Y) / X))
       RETURN
 C
 C        SB OR SU DISTRIBUTION
@@ -120,7 +122,7 @@ C
      $  TOL, B1,
      $  B3, W, Y, W1, WM1, Z, V, A, B, X, ZERO, ONE, TWO, THREE,
      $  FOUR, SIX, SEVEN, EIGHT, NINE, TEN, HALF, ONE5, TWO8,
-     $  SIXTEN, ZDABS, ZDEXP, ZLOG, ZDSQRT
+     $  SIXTEN
 C
       DATA TOL /0.0001/
       DATA ZERO,  ONE,  TWO,  THREE, FOUR,  SIX, SEVEN,
@@ -128,20 +130,21 @@ C
      $     /0.0,  1.0,  2.0,    3.0,  4.0,  6.0,   7.0,
      $      8.0,  9.0, 10.0,   16.0,  0.5,  1.5,   2.8/
 C
-      ZDABS(X) = DABS(X)
-      ZDEXP(X) = DEXP(X)
-      ZLOG(X) = DLOG(X)
+C     Remove statement fns ZDABS, ZDEXP, ZLOG, ZDSIGN, ZDSQRT
+C     ZDABS(X) = DABS(X)
+C     ZDEXP(X) = DEXP(X)
+C     ZLOG(X) = DLOG(X)
 C      ZDSIGN(X, Y) = DSIGN(X, Y)
-      ZDSQRT(X) = DSQRT(X)
+C     ZDSQRT(X) = DSQRT(X)
 C
       B1 = RB1 * RB1
       B3 = B2 - THREE
 C
 C        W IS FIRST ESTIMATE OF DEXP(DELTA ** (-2))
 C
-      W = ZDSQRT(TWO * B2 - TWO8 * B1 - TWO)
-      W = ZDSQRT(W-ONE)
-      IF (ZDABS(RB1) .GT. TOL) GOTO 10
+      W = DSQRT(TWO * B2 - TWO8 * B1 - TWO)
+      W = DSQRT(W-ONE)
+      IF (DABS(RB1) .GT. TOL) GOTO 10
 C
 C        SYMMETRICAL CASE - RESULTS ARE KNOWN
 C
@@ -161,7 +164,7 @@ C      PRINT*,'           Calculated V is', V
 C      PRINT*,'           Calculated A is', A
       B = SIXTEN * (WM1 * (SIX + V) - B3)
 C      PRINT*,'           Calculated B is', B
-      Y = (ZDSQRT(A * A - TWO * B * (WM1 * (THREE + W *
+      Y = (DSQRT(A * A - TWO * B * (WM1 * (THREE + W *
      $  (NINE + W * (TEN + V))) - TWO * W1 * Z)) - A) / B
 C      PRINT*,'           Calculated Y is', Y
       Z = Y * WM1 * (FOUR * (W + TWO) * Y + THREE * W1 * W1) ** 2 /
@@ -169,13 +172,13 @@ C      PRINT*,'           Calculated Y is', Y
 C      PRINT*,'           Calculated Z is', Z
       V = W * W
 C      PRINT*,'           Calculated V is', V
-      W = ZDSQRT(ONE - TWO * (ONE5 - B2 + (B1 *
+      W = DSQRT(ONE - TWO * (ONE5 - B2 + (B1 *
      $  (B2 - ONE5 - V * (ONE + HALF * V))) / Z))
 C      PRINT*,'           Calculated W is', W
-      W = ZDSQRT(W-ONE)
+      W = DSQRT(W-ONE)
 C      PRINT*,'           Calculated W is', W
 C      PRINT*,'In iteration; Z = ', Z, ' and W = ', W
-      IF (ZDABS(B1 - Z) .GT. TOL) GOTO 10
+      IF (DABS(B1 - Z) .GT. TOL) GOTO 10
 C
 C        END OF ITERATION
 C
@@ -183,19 +186,19 @@ C      PRINT*,'End of iteration; Z = ', Z, ' and W = ', W
 C      PRINT*,'(B1 is', B1, ')'
       Y = Y / W
 C      PRINT*,'Y = Y / W = ', Y
-      Y = ZLOG(ZDSQRT(Y) + ZDSQRT(Y + ONE))
-C      PRINT*, 'Y = ZLOG(ZDSQRT(Y) + ZDSQRT(Y + ONE)) = ', Y
+      Y = DLOG(DSQRT(Y) + DSQRT(Y + ONE))
+C      PRINT*, 'Y = DLOG(DSQRT(Y) + DSQRT(Y + ONE)) = ', Y
       IF (RB1 .GT. ZERO) Y = -Y
 C      PRINT*, 'IF (RB1 .GT. ZERO) Y = -Y gives Y = ', Y
-   20 X = ZDSQRT(ONE / ZLOG(W))
+   20 X = DSQRT(ONE / DLOG(W))
       DELTA = X
       GAMMA = Y * X
-      Y = ZDEXP(Y)
+      Y = DEXP(Y)
       Z = Y * Y
-      X = SD / ZDSQRT(HALF * (W - ONE) * (HALF * W *
+      X = SD / DSQRT(HALF * (W - ONE) * (HALF * W *
      $  (Z + ONE / Z) + ONE))
       XLAM = X
-      XI = (HALF * ZDSQRT(W) * (Y - ONE / Y)) * X + XBAR
+      XI = (HALF * DSQRT(W) * (Y - ONE / Y)) * X + XBAR
       RETURN
       END
       SUBROUTINE SBFIT(XBAR, SIGMA, RTB1, B2, GAMMA, DELTA, XLAM,
@@ -212,7 +215,7 @@ C
      $  G, S, H2, T, H2A, H2B, H3, H4, RBET, BET2, ZERO, ONE,
      $  TWO, THREE, FOUR, SIX, HALF, QUART, ONE5, A1, A2, A3,
      $  A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15,
-     $  A16, A17, A18, A19, A20, A21, A22, ZDABS, ZLOG, ZDSQRT
+     $  A16, A17, A18, A19, A20, A21, A22
       LOGICAL NEG, FAULT
 C
       DATA TT, TOL, LIMIT /1.0E-4, 0.0001, 5000/
@@ -227,11 +230,12 @@ C
      $        0.8, 0.9281, 1.0614,   1.25, 1.7973,    1.8,
      $      2.163,    2.5, 8.5245, 11.346/
 C
-      ZDABS(X) = DABS(X)
-      ZLOG(X) = DLOG(X)
-      ZDSQRT(X) = DSQRT(X)
+C     Remove statement fns ZDABS, ZLOG, ZDSQRT
+C     ZDABS(X) = DABS(X)
+C     ZLOG(X) = DLOG(X)
+C     ZDSQRT(X) = DSQRT(X)
 C
-      RB1 = ZDABS(RTB1)
+      RB1 = DABS(RTB1)
       B1 = RB1 * RB1
       NEG = RTB1 .LT. ZERO
 C
@@ -239,15 +243,15 @@ C        GET D AS FIRST ESTIMATE OF DELTA
 C
       E = B1 + ONE
       X = HALF * B1 + ONE
-      Y = ZDABS(RB1) * ZDSQRT(QUART * B1 + ONE)
+      Y = DABS(RB1) * DSQRT(QUART * B1 + ONE)
       U = (X + Y) ** (ONE / THREE)
       W = U + ONE / U - ONE
       F = W * W * (THREE + W * (TWO + W)) - THREE
       E = (B2 - E) / (F - E)
-      IF (ZDABS(RB1) .GT. TOL) GOTO 5
+      IF (DABS(RB1) .GT. TOL) GOTO 5
       F = TWO
       GOTO 20
-    5 D = ONE / ZDSQRT(ZLOG(W))
+    5 D = ONE / DSQRT(DLOG(W))
       IF (D .LT. A10) GOTO 10
       F = TWO - A21 / (D * (D * (D - A19) + A22))
       GOTO 20
@@ -288,7 +292,7 @@ C
       H2 = HMU(2) - S
       FAULT = H2 .LE. ZERO
       IF (FAULT) RETURN
-      T = ZDSQRT(H2)
+      T = DSQRT(H2)
       H2A = T * H2
       H2B = H2 * H2
       H3 = HMU(3) - HMU(1) * (THREE * HMU(2) - TWO * S)
@@ -329,12 +333,12 @@ C
       G = G - U
       IF (B1 .EQ. ZERO .OR. G .LT. ZERO) G = ZERO
       D = D - Y
-      IF (ZDABS(U) .GT. TT .OR. ZDABS(Y) .GT. TT) GOTO 80
+      IF (DABS(U) .GT. TT .OR. DABS(Y) .GT. TT) GOTO 80
 C
 C        END OF ITERATION
 C
       DELTA = D
-      XLAM = SIGMA / ZDSQRT(H2)
+      XLAM = SIGMA / DSQRT(H2)
       IF (NEG) GOTO 130
       GAMMA = G
       GOTO 140
@@ -354,7 +358,7 @@ C
       DOUBLE PRECISION A(6), B(6), C(6), G, D, ZZ, VV, RTTWO, RRTPI, 
      $  W, E, R,
      $  H, T, U, Y, X, V, F, Z, S, P, Q, AA, AB, DEXPA, DEXPB,
-     $  ZERO, QUART, HALF, P75, ONE, TWO, THREE, ZDABS, ZDEXP, DPI
+     $  ZERO, QUART, HALF, P75, ONE, TWO, THREE, DPI
       LOGICAL L, FAULT
 C
       DATA ZZ, VV, LIMIT /1.0E-5, 1.0E-8, 5000/
@@ -373,8 +377,9 @@ C     $  /1.414213562, 0.5641895835, 80.0, 23.7/
       DATA ZERO, QUART, HALF,  P75, ONE, TWO, THREE
      $     /0.0,  0.25,  0.5, 0.75, 1.0, 2.0,   3.0/
 C
-      ZDABS(X) = DABS(X)
-      ZDEXP(X) = DEXP(X)
+C	Remove statement fn ZDABS, ZDEXP
+C     ZDABS(X) = DABS(X)
+C     ZDEXP(X) = DEXP(X)
 C
       RTTWO = DSQRT(DBLE(2.0))
       DPI = 4.0D+00*ATAN(1.0D+00)
@@ -389,7 +394,7 @@ C
 C        TRIAL VALUE OF H
 C
       IF (W .GT. DEXPA) GOTO 140
-      E = ZDEXP(W) + ONE
+      E = DEXP(W) + ONE
       R = RTTWO / D
       H = P75
       IF (D .LT. THREE) H = QUART * D
@@ -429,11 +434,23 @@ C
    70 CONTINUE
       U = U - F
       Z = ONE
-      IF (U .GT. -DEXPB) Z = ZDEXP(U) + Z
+      IF (U .GT. -DEXPB) Z = DEXP(U) + Z
       T = T + F
       L = T .GT. DEXPB
-      IF (.NOT. L) S = ZDEXP(T) + ONE
-      P = ZDEXP(-V)
+
+C
+C	GPN added: If next line is not present then a compiler warning can be thrown
+C		about S not being initialised. So, we have initialized S=1 here.
+C		If (.NOT. L), then S gets set to the correct value in the line after.
+C		If (L), then the value of S is ignored - must be, because it was not previously
+C		initialized, so it does not matter than we have set it to something.
+C		We have verified by a text search that the variable S does not appear later
+C
+C
+      S = 1.0
+
+      IF (.NOT. L) S = DEXP(T) + ONE
+      P = DEXP(-V)
       Q = P
       DO 90 I = 1, 6
       AA = A(I)
@@ -452,7 +469,7 @@ C
       V = V + Y
       DO 110 I = 1, 6
       IF (A(I) .EQ. ZERO) GOTO 140
-      IF (ZDABS((A(I) - B(I)) / A(I)) .GT. VV) GOTO 60
+      IF (DABS((A(I) - B(I)) / A(I)) .GT. VV) GOTO 60
   110 CONTINUE
 C
 C        END OF INNER LOOP
@@ -463,7 +480,7 @@ C
   120 CONTINUE
       DO 130 I = 1, 6
       IF (A(I) .EQ. ZERO) GOTO 140
-      IF (ZDABS((A(I) - C(I)) / A(I)) .GT. ZZ) GOTO 20
+      IF (DABS((A(I) - C(I)) / A(I)) .GT. ZZ) GOTO 20
   130 CONTINUE
 C
 C        END OF OUTER LOOP
